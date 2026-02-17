@@ -54,6 +54,7 @@ The Problem: Locally, everything was fine. But as soon as I deployed to Vercel, 
 My Fix: I forgot that Vercel doesn't read my local .env.local file (for obvious security reasons!). I had to manually go into the Vercel Project Settings, copy-paste my NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, and trigger a new deployment.
 
 📊 Database & Security Battles
+
 3. The "Disappearing" Bookmarks
 The Problem: I would click "Add Bookmark," the UI would look fine, but when I refreshed, it was gone. It wasn't saving to the database.
 My Fix: This was a Row Level Security (RLS) issue. Supabase was protecting the table so well that even I couldn't write to it! I had to go into the SQL editor and write a policy that specifically allowed authenticated users to INSERT and SELECT data, but only if the user_id matched their own ID.
@@ -63,10 +64,12 @@ The Problem: During testing, I realized that if I logged in with a different acc
 My Fix: I went back to my RLS policies. I had to ensure the SELECT policy wasn't just "true," but actually checked auth.uid() == user_id. After updating the SQL migration, I tested with two different browser windows, and finally, everyone only saw their own data.
 
 5. Real-time Sync was Broken
+   
 The Problem: I wanted to see bookmarks pop up instantly if I had two tabs open, but I had to refresh the page every time.
 My Fix: I learned that you have to explicitly "turn on the radio" in Supabase. I went to Database → Replication and toggled the "Realtime" switch for my bookmarks table. Once that was on, the WebSockets started flowing, and the UI updated instantly.
 
 🚀 Build & Deployment Frustrations
+
 6. The "Port 3000" Conflict
 The Problem: Sometimes I’d try to start my dev server and it would just fail because I had another project running in the background.
 My Fix: Instead of hunting down the process to kill it, I just started running npm run dev -- -p 3001. It’s a simple trick, but it saved me a lot of frustration when multitasking between projects.
@@ -76,6 +79,7 @@ The Problem: My code worked locally, but Vercel kept failing the "Build" step wi
 My Fix: It turns out my build script was trying to validate environment variables that weren't there during the build process. I provided "placeholder" values in the build command so the code could compile, and then the real variables took over once the site went live.
 
 ✅ My Key Takeaways
+
 RLS is King: Never trust the frontend; always secure the database.
 
 Logs are Friends: Most of my answers were hidden in the Browser Console or Vercel Build Logs.
